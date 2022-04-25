@@ -2,13 +2,10 @@ package com.yucl.learn.async;
 
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
-import kotlin.io.FilesKt;
 import kotlin.jvm.functions.Function2;
 import kotlinx.coroutines.*;
 
-import java.io.File;
-
-public class TestA {
+public class Testkotlin {
     public static void main(String[] args) {
         Deferred<String> deferred = BuildersKt.async(
                 GlobalScope.INSTANCE,
