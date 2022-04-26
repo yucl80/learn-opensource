@@ -25,15 +25,16 @@ public class TestAESync {
             public void run() {
                 promise.complete("ok");
             }
-        },1000);
+        },10000);
 
-        Object v = await(promise.future().toCompletionStage());
+        Object v = await(promise.future().toCompletionStage().toCompletableFuture());
 
 
         
         System.out.println(v);
-        Boolean x = await(est.buyItem("dfsd", 11000));
-        System.out.println(System.nanoTime()+ Thread.currentThread().getName() + " finish" );
+        System.out.println("test");
+        //Boolean x = await(est.buyItem("dfsd", 11000));
+      //  System.out.println(System.nanoTime()+ Thread.currentThread().getName() + " finish" );
         System.in.read();
     }
 

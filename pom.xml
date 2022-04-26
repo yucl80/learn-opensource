@@ -37,7 +37,11 @@
             <artifactId>cadence-client</artifactId>
             <version>3.6.1</version>
         </dependency>
-
+        <dependency>
+            <groupId>net.tascalate.async</groupId>
+            <artifactId>net.tascalate.async.runtime</artifactId>
+            <version>1.2.2</version>
+        </dependency>
         <!--<dependency>
           <groupId>io.temporal</groupId>
           <artifactId>temporal-sdk</artifactId>

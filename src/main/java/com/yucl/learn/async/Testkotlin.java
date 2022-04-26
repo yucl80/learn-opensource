@@ -2,21 +2,23 @@ package com.yucl.learn.async;
 
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
+import kotlin.coroutines.CoroutineContext;
+import kotlin.jvm.functions.Function1;
 import kotlin.jvm.functions.Function2;
 import kotlinx.coroutines.*;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Testkotlin {
     public static void main(String[] args) {
@@ -26,10 +28,43 @@ public class Testkotlin {
                 CoroutineStart.DEFAULT, // CoroutineStart.LAZY, or other strategies
                (coroutineScope, continuation) -> {
                     // do your stuff
+                   System.out.println("1"+Thread.currentThread().getName());
                    return httpGet();
                }
         );
-        System.out.println("hello");
+        List<Deferred> list =new ArrayList<>();
+
+        AwaitKt.awaitAll(new Deferred[]{deferred}, new Continuation<List<?>>() {
+            @NotNull
+            @Override
+            public CoroutineContext getContext() {
+                return  GlobalScope.INSTANCE.getCoroutineContext();
+            }
+
+            @Override
+            public void resumeWith(@NotNull Object o) {
+
+            }
+        });
+
+
+
+      Object vv =   deferred.await(new Continuation<String>() {
+            @NotNull
+            @Override
+            public CoroutineContext getContext() {
+                return   GlobalScope.INSTANCE.getCoroutineContext();
+            }
+
+            @Override
+            public void resumeWith(@NotNull Object o) {
+                System.out.println("gggg"+Thread.currentThread().getName());
+                System.out.println(o);
+            }
+        });
+
+        System.out.println("vv" + vv);
+        System.out.println(Thread.currentThread().getName());
 
 
 
@@ -39,10 +74,24 @@ public class Testkotlin {
                 CoroutineStart.DEFAULT, // CoroutineStart.LAZY, or other strategies
                 (Function2<CoroutineScope, Continuation<? super Unit>, Unit>) (coroutineScope, continuation) -> {
                    String data =  httpGet();
-                   System.out.println(data);
+                   System.out.println("result2");
+                    System.out.println("2"+Thread.currentThread().getName());
                     return Unit.INSTANCE;
                 }
         );
+
+
+
+
+        System.out.println("after job");
+
+        job.invokeOnCompletion(new Function1<Throwable, Unit>() {
+            @Override
+            public Unit invoke(Throwable throwable) {
+                System.out.println("invoke");
+                return null;
+            }
+        });
 
 
 
@@ -55,15 +104,24 @@ public class Testkotlin {
                     GlobalScope.INSTANCE.getCoroutineContext(),
                     (Function2<CoroutineScope, Continuation<? super String>, String>) (coroutineScope, continuation) -> {
                         // do your stuff
+                        System.out.println("3"+Thread.currentThread().getName());
                         return httpGet();
                     }
             );
-            System.out.println(result);
+
+
+            System.out.println("result3");
         } catch (InterruptedException e) {
             // If this blocked thread is interrupted, then the coroutine job is cancelled and
             // * this runBlocking invocation throws InterruptedException.
             // *
             // Do something with the interruption error
+        }
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
